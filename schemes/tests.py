@@ -52,7 +52,7 @@ class SchemeListViewTest(TestCase):
         self.assertContains(response, 'Test Scholarship')
 
     def test_404_for_nonexistent_scheme(self):
-        response = self.client.get('/schemes/9999/')
+        response = self.client.get('/schemes/000000000000000000009999/')
         self.assertEqual(response.status_code, 404)
 
 

@@ -1,10 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.db.models import Q
+from bson import ObjectId
+from bson.errors import InvalidId
 from .models import Scheme, SchemeApplication
 from .forms import SchemeForm, SchemeApplicationForm, SchemeSearchForm
+
+
+def get_objectid_or_404(pk):
+    try:
+        return ObjectId(pk)
+    except (InvalidId, TypeError):
+        raise Http404
 
 
 EDUCATION_ORDER = ['below_10', '10th', '12th', 'graduate', 'postgraduate']
@@ -30,7 +39,8 @@ def scheme_list(request):
 
 
 def scheme_detail(request, pk):
-    scheme = get_object_or_404(Scheme, pk=pk, status='active')
+    oid = get_objectid_or_404(pk)
+    scheme = get_object_or_404(Scheme, pk=oid, status='active')
     already_applied = False
     if request.user.is_authenticated:
         already_applied = SchemeApplication.objects.filter(user=request.user, scheme=scheme).exists()
@@ -71,15 +81,25 @@ def schemes_by_year(request, year):
 
 
 def scheme_api_list(request):
-    schemes = Scheme.objects.filter(status='active').values(
-        'id', 'name', 'slug', 'category', 'organization', 'status', 'created_at'
-    )
-    return JsonResponse({'schemes': list(schemes)}, safe=False)
+    schemes = Scheme.objects.filter(status='active')
+    data = []
+    for s in schemes:
+        data.append({
+            'id': str(s.pk),
+            'name': s.name,
+            'slug': s.slug,
+            'category': s.category,
+            'organization': s.organization,
+            'status': s.status,
+            'created_at': s.created_at.isoformat(),
+        })
+    return JsonResponse({'schemes': data})
 
 
 @login_required
 def scheme_apply(request, pk):
-    scheme = get_object_or_404(Scheme, pk=pk, status='active')
+    oid = get_objectid_or_404(pk)
+    scheme = get_object_or_404(Scheme, pk=oid, status='active')
     if SchemeApplication.objects.filter(user=request.user, scheme=scheme).exists():
         messages.warning(request, 'You have already applied to this scheme.')
         return redirect('scheme_detail', pk=pk)
@@ -180,7 +200,8 @@ def scheme_create(request):
 
 @login_required
 def scheme_edit(request, pk):
-    scheme = get_object_or_404(Scheme, pk=pk)
+    oid = get_objectid_or_404(pk)
+    scheme = get_object_or_404(Scheme, pk=oid)
     if not request.user.is_staff and scheme.created_by != request.user:
         messages.error(request, 'You do not have permission to edit this scheme.')
         return redirect('home')
@@ -222,7 +243,8 @@ def approve_application(request, pk):
     if not request.user.is_staff:
         messages.error(request, 'You do not have permission.')
         return redirect('home')
-    application = get_object_or_404(SchemeApplication, pk=pk)
+    oid = get_objectid_or_404(pk)
+    application = get_object_or_404(SchemeApplication, pk=oid)
     if request.method == 'POST':
         application.status = 'approved'
         application.admin_remarks = request.POST.get('remarks', '')
@@ -236,7 +258,8 @@ def reject_application(request, pk):
     if not request.user.is_staff:
         messages.error(request, 'You do not have permission.')
         return redirect('home')
-    application = get_object_or_404(SchemeApplication, pk=pk)
+    oid = get_objectid_or_404(pk)
+    application = get_object_or_404(SchemeApplication, pk=oid)
     if request.method == 'POST':
         application.status = 'rejected'
         application.admin_remarks = request.POST.get('remarks', '')

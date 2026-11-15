@@ -18,8 +18,13 @@ A Django web application that helps citizens discover and apply for government s
 ## Tech Stack
 
 - **Backend:** Django 5+
+- **Database:** MongoDB (via django-mongodb-backend)
 - **Frontend:** Tailwind CSS (CDN)
-- **Database:** SQLite
+
+## Prerequisites
+
+- Python 3.12+
+- MongoDB running on `localhost:27017`
 
 ## Setup
 
@@ -52,11 +57,12 @@ Open `http://127.0.0.1:8000` in your browser.
 
 ```
 schemz_django/
-├── schemz/          # Project settings & root URLs
-├── accounts/        # Registration, login, logout, profile
-├── schemes/         # Schemes, applications, matching
-├── templates/       # HTML templates (base + app-specific)
-├── static/css/      # Custom CSS
+├── schemz/              # Project settings & root URLs
+├── accounts/            # Registration, login, logout, profile
+├── schemes/             # Schemes, applications, matching
+├── mongo_migrations/    # MongoDB migrations for contrib apps
+├── templates/           # HTML templates (base + app-specific)
+├── static/css/          # Custom CSS
 ├── manage.py
 └── requirements.txt
 ```

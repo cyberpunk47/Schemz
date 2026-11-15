@@ -10,15 +10,24 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'schemz.apps.MongoAdminConfig',
+    'schemz.apps.MongoAuthConfig',
+    'schemz.apps.MongoContentTypesConfig',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_mongodb_backend',
     'accounts',
     'schemes',
 ]
+
+MIGRATION_MODULES = {
+    'admin': 'mongo_migrations.admin',
+    'auth': 'mongo_migrations.auth',
+    'contenttypes': 'mongo_migrations.contenttypes',
+}
+
+DATABASE_ROUTERS = ['django_mongodb_backend.routers.MongoRouter']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -52,8 +61,8 @@ WSGI_APPLICATION = 'schemz.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django_mongodb_backend',
+        'NAME': 'schemz_db',
     }
 }
 
@@ -72,7 +81,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django_mongodb_backend.fields.ObjectIdAutoField'
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
