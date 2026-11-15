@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Profile - Schemz{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">My Profile</h2>
+        <p class="text-gray-500 dark:text-gray-400 mb-6">
+            Welcome, {{ user.first_name|default:user.username }}!
+            {% if login_count %}
+                You have logged in {{ login_count }} time{{ login_count|pluralize }}.
+            {% endif %}
+        </p>
+
+        {% if not profile.is_complete %}
+        <div class="bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg p-3 mb-6">
+            Please complete your profile to get matched with eligible schemes.
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'profile' %}">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Age</label>
+                    {{ form.age }}
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Gender</label>
+                    {{ form.gender }}
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Annual Income (INR)</label>
+                    {{ form.annual_income }}
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Category</label>
+                    {{ form.category }}
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">State</label>
+                    {{ form.state }}
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Education</label>
+                    {{ form.education }}
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Occupation</label>
+                    {{ form.occupation }}
+                </div>
+            </div>
+
+            <button type="submit"
+                class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700">
+                Update Profile
+            </button>
+        </form>
+
+        <!-- Theme Cookie Demo -->
+        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">Theme Preference</h3>
+            <form method="POST" action="{% url 'set_theme' %}" class="flex items-center space-x-3"
+                  id="theme-form">
+                {% csrf_token %}
+                <select name="theme" id="theme-select"
+                    class="px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+                <button type="submit"
+                    class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                    Save Theme
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pre-select current theme from cookie
+    (function() {
+        var match = document.cookie.match(/(?:^|;\s*)theme=([^;]*)/);
+        if (match) {
+            document.getElementById('theme-select').value = match[1];
+        }
+    })();
+</script>
+{% endblock %}

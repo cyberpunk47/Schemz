@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit Scheme{% else %}Create Scheme{% endif %} - Schemz{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">
+            {% if editing %}Edit Scheme: {{ scheme.name }}{% else %}Create New Scheme{% endif %}
+        </h2>
+
+        {% if form.errors %}
+        <div class="bg-red-100 text-red-700 border border-red-300 rounded-lg p-3 mb-4">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-4">
+                <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Scheme Name</label>
+                {{ form.name }}
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Category</label>
+                    {{ form.category }}
+                </div>
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Organization</label>
+                    {{ form.organization }}
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mt-6 mb-4">Eligibility Criteria</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Minimum Age</label>
+                    {{ form.min_age }}
+                </div>
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Maximum Age</label>
+                    {{ form.max_age }}
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Max Annual Income (INR)</label>
+                {{ form.max_income }}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Eligible Genders</label>
+                    {{ form.eligible_genders }}
+                </div>
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Eligible Categories</label>
+                    {{ form.eligible_categories }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Min Education</label>
+                    {{ form.min_education }}
+                </div>
+                <div>
+                    <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Status</label>
+                    {{ form.status }}
+                </div>
+            </div>
+
+            <button type="submit"
+                class="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700">
+                {% if editing %}Update Scheme{% else %}Create Scheme{% endif %}
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

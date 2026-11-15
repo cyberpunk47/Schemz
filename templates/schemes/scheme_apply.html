@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Apply - {{ scheme.name }} - Schemz{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <a href="{% url 'scheme_detail' scheme.pk %}" class="text-indigo-600 dark:text-indigo-400 hover:underline mb-4 inline-block">
+        &larr; Back to {{ scheme.name|truncatewords:5 }}
+    </a>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Apply for Scheme</h2>
+        <p class="text-gray-500 dark:text-gray-400 mb-6">{{ scheme.name }}</p>
+
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+                <strong>Organization:</strong> {{ scheme.organization }}<br>
+                <strong>Category:</strong> {{ scheme.get_category_display }}
+            </p>
+        </div>
+
+        <form method="POST" action="{% url 'scheme_apply' scheme.pk %}">
+            {% csrf_token %}
+
+            <div class="mb-6">
+                <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">
+                    Why do you want to apply for this scheme?
+                </label>
+                {{ form.reason }}
+                {% if form.reason.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ form.reason.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit"
+                class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700">
+                Submit Application
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
